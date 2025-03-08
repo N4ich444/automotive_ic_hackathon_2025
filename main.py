@@ -21,8 +21,11 @@ def print_hi(name):
     print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
 
 #crops images into data that can be fed into the machine learning algorithm.
-def crop_data():
-    pass
+def crop_data(filename):
+    file = open(filename)
+    for line in file.readlines():
+        image_name, numbers = line.split(".tiff")
+
 
 def train(data):
     pass
