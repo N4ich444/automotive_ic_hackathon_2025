@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import os
 import numpy as np
 
+from pathlib import Path
+
 
 #ML library
 import PIL
@@ -27,8 +29,10 @@ def print_hi(name):
 
 #crops images into data that can be fed into the machine learning algorithm.
 def crop_data(dir, filename, bit):
+    ctr = 0
     file = open(dir + filename)
     for line in file.readlines():
+        #ctr = 0
         image_name, numbers = line.split(".")
         #print(f"image_name {image_name} nums {numbers}")
         n_arr = numbers.split(maxsplit=1)
@@ -37,10 +41,44 @@ def crop_data(dir, filename, bit):
         np_arr = np.fromstring(n_arr[1],dtype=int, sep=' ')
 
 
-        print(f"image_name {image_name} nums {np_arr}")
+
+        print(f"image_name {image_name} nums {np_arr} 1 {np_arr[1]} 2 {np_arr[2]} 3 {np_arr[3]} 4 {np_arr[4]}")
 
         img = Image.open(dir + f"train_images_{bit}_bit/" + image_name)
 
+        width, height = img.size
+
+        #cropped = img.crop((np_arr[1],  np_arr[3],  np_arr[2] ,  np_arr[4]))
+
+        left = np_arr[1]
+        right = np_arr[2]
+        top = height - np_arr[3]
+        bottom = height - np_arr[4]
+
+        if left > right:
+            tmp = left
+            left = right
+            right = tmp
+
+        if top > bottom:
+            tmp = top
+            top = bottom
+            bottom = tmp
+
+
+
+        if top != bottom and left != right:
+
+            cropped = img.crop((left, top, right, bottom))
+
+            if not os.path.exists(f"output/{bit}_bit/boxes/"):
+                Path(f"output/{bit}_bit/boxes/").mkdir(parents=True,exist_ok=True)
+
+            cropped = cropped.save(f"output/{bit}_bit/boxes/{np_arr[0]}_{ctr}_{image_name}")
+
+            ctr += 1
+
+        #if ctr > 5: break
 
 
 
